@@ -6,8 +6,10 @@ export const Container = styled.div`
   border-radius: 5px;
   margin-bottom: 10px;
   padding: 15px;
-  box-shadow: 0 1px 4px 0 rgba(192, 208, 230, 0.8);
-  border-top: 20px solid rgba(230, 236, 245, 0.4);
+  box-shadow: 0 1px 4px 0 rgba(192, 208, 230);
+  border-top: 20px solid rgba(230, 236, 245);
+  // box-shadow: 0 1px 4px 0 rgba(192, 208, 230, 0.8);
+  // border-top: 20px solid rgba(230, 236, 245, 0.4);
   cursor: grab;
 
   header {
@@ -47,4 +49,11 @@ export const Label = styled.span`
   border-radius: 2px;
   display: inline-block;
   background: ${props => props.color}
+`
+export const Input = styled.input`
+  width: 100%;
+  padding: 12px 8px;
+  border-radius: 9px;
+  border: 1px solid #ddd;
+  max-width: 260px;
 `

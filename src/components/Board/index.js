@@ -1,33 +1,44 @@
-import { useState } from 'react'
-import produce from 'immer'
-
 import { Container } from './styles'
 
-import BoardContext from './context'
+import Card from '../Card'
 
-import { loadLists } from '../../services/api'
+import { ButtonCreateNewCard } from '../CreateNewCard';
+import { useRef} from 'react';
+import {useDrag, useDrop} from "react-dnd";
+import {useBoards} from "../../services/zustand";
 
-import List from '../List'
+export default function Board({ data, boardIndex }) {
+    const {boards, move} = useBoards(({boards, move}) => ({boards, move}))
+    const boardRef = useRef()
 
-const data = loadLists()
+    const [, dropRef] = useDrop({
+        accept: 'CARD',
+        hover: (item, monitor) => {
+            const toBoardIndex = boardIndex
+            const fromBoardIndex = item.boardIndex
+            const draggedFromCardIndex = item.cardIndex
 
-export default function Board() {
-  const [lists, setLists] = useState(data)
+            if (fromBoardIndex === toBoardIndex) return
+            if (boards[toBoardIndex].cards.length > 0) return
 
-  function move(fromList, toList, from, to) {
-    setLists(produce(lists, draft => {
-      const dragged = draft[fromList].cards[from]
+            move(fromBoardIndex, toBoardIndex, draggedFromCardIndex, 0)
 
-      draft[fromList].cards.splice(from, 1)
-      draft[toList].cards.splice(to, 0, dragged)
-    }))
-  }
-    
+            item.cardIndex = 0
+            item.boardIndex = toBoardIndex
+        },
+    })
+    dropRef(boardRef)
+
   return (
-    <BoardContext.Provider value={{ lists, move }}>
-      <Container>
-        {lists.map((list, index) => <List key={list.title} index={index} data={list} />)}
-      </Container>
-    </BoardContext.Provider>
+    <Container done={data.done} ref={boardRef}>
+      <header>
+        <h2>{data.title}</h2>
+        {data.creatable && <ButtonCreateNewCard boardIndex={boardIndex} />}
+      </header>
+
+      <ul>
+        {data.cards.map((card, index) => <Card key={index} boardIndex={boardIndex} cardIndex={index} data={card} />)}
+      </ul>
+    </Container>
   )
 }
